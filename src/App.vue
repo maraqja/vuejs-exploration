@@ -27,16 +27,6 @@
         newTitle: '',
         newBody: ''
       }
-    },
-    methods: {
-      createPost() {
-        this.posts.push({
-          id: Date.now(),
-          title: this.newTitle,
-          body: this.newBody
-        })
-        this.newTitle = this.newBody = '' // обнуляем
-      }
     }
   }
 </script>

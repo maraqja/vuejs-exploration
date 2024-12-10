@@ -4,20 +4,18 @@
     <!--  v-bind:value="newTitle" - связываем логику с  разметкой -->
     <!--  @input="inputTitle" - связываем разметку с логикой (при наборе в инпут меняются данные компонента) -->
     <input
-      :value="post.title"
-      @input="post.title = $event.target.value"
+      v-model="post.title"
       class="input"
       type="text"
       placeholder="Название"
     />
     <input
-      :value="post.body"
-      @input="post.body = $event.target.value"
+      v-model="post.body"
       class="input"
       type="text"
       placeholder="Описание"
     />
-    <!-- <button class="btn" @click="createPost">Создать</button> -->
+    <button class="btn" @click="createPost">Создать</button>
   </form>
 </template>
 
@@ -29,6 +27,12 @@
           title: '',
           body: ''
         }
+      }
+    },
+    methods: {
+      createPost() {
+        this.post.id = Date.now() // генерируем id, все остальное берем из формы
+        this.title = this.body = '' // обнуляем
       }
     }
   }
