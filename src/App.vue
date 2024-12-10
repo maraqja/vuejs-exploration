@@ -1,7 +1,7 @@
 <template>
   <!-- тут пишем разметку компонента -->
   <div class="app">
-    <PostForm />
+    <PostForm @createdPost="addPost" />
     <!-- передаем пропс в компонент PostForm -->
     <PostList :posts="posts" />
   </div>
@@ -23,9 +23,12 @@
         posts: [
           { id: 1, title: 'Название 1', body: 'Описание 1' },
           { id: 2, title: 'Название 2', body: 'Описание 2' }
-        ],
-        newTitle: '',
-        newBody: ''
+        ]
+      }
+    },
+    methods: {
+      addPost(post) {
+        this.posts.push(post)
       }
     }
   }

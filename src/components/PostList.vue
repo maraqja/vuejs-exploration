@@ -1,14 +1,16 @@
 <!-- В КОМПОНЕНТ В КАЧЕСТВЕ ПРОПСОВ ПЕРЕДАЕМ МАССИВ ПОСТОВ (ФЕТЧИМ ИХ В КОРНЕВОМ КОМПОНЕНТЕ APP)-->
 
 <template>
-  <div class="post" v-for="{ id, title, body } in posts" :key="id">
-    <div><strong>Название: </strong>{{ title }}</div>
-    <div><strong>Описание: </strong>{{ body }}</div>
+  <div class="posts-list">
+    <h3>Список пользователей</h3>
+    <PostItem v-for="post in posts" :key="post.id" :post="post"></PostItem>
   </div>
 </template>
 
 <script>
+  import PostItem from '@/components/PostItem'
   export default {
+    components: { PostItem },
     props: {
       // ПРОПСЫ НЕЛЬЗЯ (по факту можно, но это очень бед практис) изменять в дочернем компоненте, они только читаемые
       // пропсы - это свойства, которые принимаются из родительского компонента
@@ -21,10 +23,4 @@
   }
 </script>
 
-<style scoped>
-  .post {
-    padding: 15px;
-    border: 2px solid teal;
-    margin-top: 15px;
-  }
-</style>
+<style scoped></style>
