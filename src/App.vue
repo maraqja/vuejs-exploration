@@ -7,7 +7,8 @@
       <PostForm @createdPost="addPost" />
     </MyDialog>
     <!-- передаем пропс в компонент PostForm -->
-    <PostList :posts="posts" @removePost="removePost" />
+    <PostList v-if="!isPostsLoading" :posts="posts" @removePost="removePost" />
+    <div v-else>Загрузка...</div>
   </div>
 </template>
 
@@ -16,19 +17,21 @@
   // обязательно дефолтно экспортирует объект
   import PostList from '@/components/PostList.vue' // @ - alias для src
   import PostForm from '@/components/PostForm.vue'
+  import axios from 'axios'
   export default {
     components: {
       PostList,
       PostForm
     },
+    mounted() {
+      this.fetchPosts()
+    },
     data() {
       // метод data возвращает объект, в котором описываются свойства компонента
       return {
         dialogVisible: false,
-        posts: [
-          { id: 1, title: 'Название 1', body: 'Описание 1' },
-          { id: 2, title: 'Название 2', body: 'Описание 2' }
-        ]
+        posts: [],
+        isPostsLoading: false
       }
     },
     methods: {
@@ -41,6 +44,20 @@
       },
       showDialog() {
         this.dialogVisible = true
+      },
+      async fetchPosts() {
+        try {
+          this.isPostsLoading = true
+
+          const response = await axios.get(
+            'https://jsonplaceholder.typicode.com/posts?_limit=10'
+          )
+          this.posts = response.data
+        } catch (e) {
+          alert(e)
+        } finally {
+          this.isPostsLoading = false
+        }
       }
     }
   }
