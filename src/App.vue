@@ -3,7 +3,7 @@
   <div class="app">
     <PostForm @createdPost="addPost" />
     <!-- передаем пропс в компонент PostForm -->
-    <PostList :posts="posts" />
+    <PostList :posts="posts" @removePost="removePost" />
   </div>
 </template>
 
@@ -29,6 +29,9 @@
     methods: {
       addPost(post) {
         this.posts.push(post)
+      },
+      removePost(post) {
+        this.posts = this.posts.filter((p) => p.id !== post.id)
       }
     }
   }
