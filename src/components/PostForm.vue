@@ -15,11 +15,15 @@
       type="text"
       placeholder="Описание"
     />
-    <button class="btn" @click="createPost">Создать</button>
+    <MyButton style="align-self: flex-end; margin-top: 15px" @click="createPost"
+      >Создать</MyButton
+    >
+    <!-- все стили, директивы, события и тд передаются в компонент -->
   </form>
 </template>
 
 <script>
+  import MyButton from './UI/MyButton.vue'
   export default {
     data() {
       return {
@@ -29,6 +33,7 @@
         }
       }
     },
+    components: { MyButton },
     methods: {
       createPost() {
         this.post.id = Date.now() // генерируем id, все остальное берем из формы
@@ -49,13 +54,5 @@
     border: 1px solid teal;
     padding: 10px 15px;
     margin-top: 15px;
-  }
-  .btn {
-    align-self: flex-end; /* чтобы прилипала к правому краю */
-    margin-top: 15px;
-    padding: 10px 15px;
-    background: none;
-    color: teal;
-    border: 1px solid teal;
   }
 </style>

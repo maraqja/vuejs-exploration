@@ -6,14 +6,17 @@
     </div>
     <div>
       <div class="post-btns">
-        <button>Удалить</button>
+        <MyButton>Удалить</MyButton>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import MyButton from './UI/MyButton.vue'
+
   export default {
+    components: { MyButton },
     props: {
       post: {
         type: Object,
