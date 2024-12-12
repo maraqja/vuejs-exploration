@@ -1,8 +1,7 @@
 <!-- В КОМПОНЕНТ В КАЧЕСТВЕ ПРОПСОВ ПЕРЕДАЕМ МАССИВ ПОСТОВ (ФЕТЧИМ ИХ В КОРНЕВОМ КОМПОНЕНТЕ APP)-->
 
 <template>
-  <!-- v-show задает условие, когда компонент будет отображаться -->
-  <div v-show="posts.length > 0" class="posts-list">
+  <div v-if="posts.length > 0" class="posts-list">
     <h3>Список постов</h3>
     <PostItem
       v-for="post in posts"
@@ -11,7 +10,7 @@
       @removePost="$emit('removePost', post)"
     ></PostItem>
   </div>
-  <h2 v-show="posts.length === 0" style="color: red">Список постов пуст</h2>
+  <h2 v-else style="color: red">Список постов пуст</h2>
 </template>
 
 <script>
