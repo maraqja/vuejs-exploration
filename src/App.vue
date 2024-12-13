@@ -2,12 +2,20 @@
   <!-- тут пишем разметку компонента -->
   <div class="app">
     <h1>Страница с постами</h1>
-    <MyButton @click="showDialog" style="margin: 15px 0">Создать пост</MyButton>
+    <div class="app__btns">
+      <MyButton @click="showDialog">Создать пост</MyButton>
+      <MySelect v-model="selectedSort" :options="sortOptions"></MySelect>
+    </div>
+
     <MyDialog v-model:show="dialogVisible">
       <PostForm @createdPost="addPost" />
     </MyDialog>
     <!-- передаем пропс в компонент PostForm -->
-    <PostList v-if="!isPostsLoading" :posts="posts" @removePost="removePost" />
+    <PostList
+      v-if="!isPostsLoading"
+      :posts="sortedPosts"
+      @removePost="removePost"
+    />
     <div v-else>Загрузка...</div>
   </div>
 </template>
@@ -26,12 +34,34 @@
     mounted() {
       this.fetchPosts()
     },
+
+    computed: {
+      sortedPosts() {
+        return [...this.posts].sort((post1, post2) =>
+          post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+        )
+      }
+    },
+    // watch: {
+    //   // сортируем с помощью watched
+    //   selectedSort(newValue) {
+    //     // при изменении selectedSort вызывается функция
+    //     this.posts.sort((post1, post2) => {
+    //       return post1[newValue]?.localeCompare(post2[newValue])
+    //     })
+    //   }
+    // },
     data() {
       // метод data возвращает объект, в котором описываются свойства компонента
       return {
         dialogVisible: false,
         posts: [],
-        isPostsLoading: false
+        isPostsLoading: false,
+        selectedSort: '',
+        sortOptions: [
+          { value: 'title', name: 'По названию' },
+          { value: 'body', name: 'По содержимому' }
+        ]
       }
     },
     methods: {
@@ -72,5 +102,10 @@
   } /* классическое обнуление стилей (у браузеров есть дефолтные стили) */
   .app {
     padding: 20px;
+  }
+  .app__btns {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
   }
 </style>

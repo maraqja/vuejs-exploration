@@ -22,6 +22,19 @@
         }
       }
     },
+    watch: {
+      // // при изменении title вызывается функция
+      // 'post.title'(newValue) {
+      //   console.log(newValue)
+      // },
+      post: {
+        // при изменении post вызывается функция
+        handler(newValue) {
+          console.log(newValue)
+        },
+        deep: true // при изменении вложенных свойств вызывается функция handler
+      }
+    },
     methods: {
       createPost() {
         this.post.id = Date.now() // генерируем id, все остальное берем из формы

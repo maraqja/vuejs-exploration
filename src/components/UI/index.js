@@ -1,5 +1,6 @@
 import MyButton from './MyButton'
 import MyInput from './MyInput'
 import MyDialog from './MyDialog'
+import MySelect from './MySelect.vue'
 
-export default [MyButton, MyInput, MyDialog] // отсюда экспортируем UI-компоненты
+export default [MyButton, MyInput, MyDialog, MySelect] // отсюда экспортируем UI-компоненты
