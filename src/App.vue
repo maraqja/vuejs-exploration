@@ -20,9 +20,8 @@
     <div v-else>Загрузка...</div>
 
     <div class="page__wrapper">
-      <!-- если передать в v-for цифру, то будет ровно такое количество итераций  -->
       <button
-        v-for="pageNumber in lastPage"
+        v-for="pageNumber in pagesToShow"
         :key="pageNumber"
         class="page"
         @click="changePage(pageNumber)"
@@ -40,6 +39,7 @@
   import PostList from '@/components/PostList.vue' // @ - alias для src
   import PostForm from '@/components/PostForm.vue'
   import axios from 'axios'
+
   export default {
     components: {
       PostList,
@@ -61,6 +61,31 @@
         return this.sortedPosts.filter((post) =>
           post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
         )
+      },
+      pagesToShow() {
+        // 1. Получаем общее количество страниц
+        const totalPages = this.lastPage
+
+        // 2. Получаем текущую страницу
+        const currentPage = this.page
+
+        // 3. Создаем пустой массив для хранения страниц, которые нужно отобразить
+        const pages = []
+
+        // 4. Определяем диапазон страниц для отображения
+        // Мы хотим отобразить 5 страниц, при этом имея возможность перемещаться вперед и назад, поэтому берем текущую страницу и добавляем/вычитаем 2 (в результате текущая страинца будет по центру)
+        // Math.max(1, currentPage - 2) гарантирует, что мы не выйдем за пределы первой страницы
+        // Math.min(totalPages, currentPage + 2) гарантирует, что мы не выйдем за пределы последней страницы
+        const startPage = Math.max(1, currentPage - 2)
+        const endPage = Math.min(totalPages, currentPage + 2)
+
+        // 5. Заполняем массив страниц, которые нужно отобразить
+        for (let i = startPage; i <= endPage; i++) {
+          pages.push(i)
+        }
+
+        // 6. Возвращаем массив страниц, которые нужно отобразить
+        return pages
       }
     },
     watch: {
