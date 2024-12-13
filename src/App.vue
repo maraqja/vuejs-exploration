@@ -18,6 +18,19 @@
       @removePost="removePost"
     />
     <div v-else>Загрузка...</div>
+
+    <div class="page__wrapper">
+      <!-- если передать в v-for цифру, то будет ровно такое количество итераций  -->
+      <button
+        v-for="pageNumber in lastPage"
+        :key="pageNumber"
+        class="page"
+        @click="changePage(pageNumber)"
+        :class="{ 'page--current': pageNumber === page ? true : false }"
+      >
+        {{ pageNumber }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -50,15 +63,12 @@
         )
       }
     },
-    // watch: {
-    //   // сортируем с помощью watched
-    //   selectedSort(newValue) {
-    //     // при изменении selectedSort вызывается функция
-    //     this.posts.sort((post1, post2) => {
-    //       return post1[newValue]?.localeCompare(post2[newValue])
-    //     })
-    //   }
-    // },
+    watch: {
+      // при изменении страницы триггерим получение постов
+      page() {
+        this.fetchPosts()
+      }
+    },
     data() {
       // метод data возвращает объект, в котором описываются свойства компонента
       return {
@@ -70,7 +80,10 @@
           { value: 'title', name: 'По названию' },
           { value: 'body', name: 'По содержимому' }
         ],
-        searchQuery: ''
+        searchQuery: '',
+        page: 1,
+        limit: 10,
+        lastPage: 0 // вычисляем при помощи хедера x-total-count (это кол-во постов) из респонса первого запроса с пагинацией
       }
     },
     methods: {
@@ -89,7 +102,16 @@
           this.isPostsLoading = true
 
           const response = await axios.get(
-            'https://jsonplaceholder.typicode.com/posts?_limit=10'
+            `https://jsonplaceholder.typicode.com/posts`,
+            {
+              params: {
+                _page: this.page,
+                _limit: this.limit
+              }
+            }
+          )
+          this.lastPage = Math.ceil(
+            response.headers['x-total-count'] / this.limit
           )
           this.posts = response.data
         } catch (e) {
@@ -97,6 +119,9 @@
         } finally {
           this.isPostsLoading = false
         }
+      },
+      changePage(pageNumber) {
+        this.page = pageNumber
       }
     }
   }
@@ -116,5 +141,23 @@
     display: flex;
     justify-content: space-between;
     margin: 15px 0;
+  }
+
+  .page__wrapper {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+  }
+
+  .page {
+    border: 1px solid black;
+    padding: 10px;
+    background: none;
+    cursor: pointer;
+  }
+
+  .page--current {
+    border: 2px solid teal;
   }
 </style>
