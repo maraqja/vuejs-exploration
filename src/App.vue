@@ -2,6 +2,7 @@
   <!-- тут пишем разметку компонента -->
   <div class="app">
     <h1>Страница с постами</h1>
+    <MyInput v-model="searchQuery" placeholder="Поиск..."></MyInput>
     <div class="app__btns">
       <MyButton @click="showDialog">Создать пост</MyButton>
       <MySelect v-model="selectedSort" :options="sortOptions"></MySelect>
@@ -13,7 +14,7 @@
     <!-- передаем пропс в компонент PostForm -->
     <PostList
       v-if="!isPostsLoading"
-      :posts="sortedPosts"
+      :posts="sortedAndFilteredPosts"
       @removePost="removePost"
     />
     <div v-else>Загрузка...</div>
@@ -36,9 +37,16 @@
     },
 
     computed: {
+      // computed вызывается каждый раз при изменении зависимостей (в данном случае posts и selectedSort)
       sortedPosts() {
         return [...this.posts].sort((post1, post2) =>
           post1[this.selectedSort]?.localeCompare(post2[this.selectedSort])
+        )
+      },
+      sortedAndFilteredPosts() {
+        // делаем computed свойство от computed свойства
+        return this.sortedPosts.filter((post) =>
+          post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
         )
       }
     },
@@ -61,7 +69,8 @@
         sortOptions: [
           { value: 'title', name: 'По названию' },
           { value: 'body', name: 'По содержимому' }
-        ]
+        ],
+        searchQuery: ''
       }
     },
     methods: {
