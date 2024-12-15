@@ -17,9 +17,11 @@
       :posts="sortedAndFilteredPosts"
       @removePost="removePost"
     />
-    <div v-else>Загрузка...</div>
+    <!-- <div v-else>Загрузка...</div> -->
+    <!-- Используем ref для получения доступа к DOM элементу -->
+    <div ref="observer" class="observer"></div>
 
-    <div class="page__wrapper">
+    <!-- <div class="page__wrapper">
       <button
         v-for="pageNumber in pagesToShow"
         :key="pageNumber"
@@ -29,7 +31,7 @@
       >
         {{ pageNumber }}
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -47,6 +49,23 @@
     },
     mounted() {
       this.fetchPosts()
+
+      // // Получаем ссылку на элемент, который будет наблюдаться
+      // console.log(this.$refs.observer)
+      // Intersection Observer API позволяет зарегистрировать callback-функцию, которая отработает, когда мы пересекли какой-то элемент
+      const options = {
+        rootMargin: '0px',
+        threshold: 1.0
+      }
+      const callback = (entries) => {
+        // Колбек отрабатывает при появлении элемента в зоне видимости и при выходе элемента из зоны видимости
+        // Поэтому проверяем, что элемент пересек элемент наблюдения: isIntersecting = true
+        if (entries[0].isIntersecting && this.page < this.lastPage) {
+          this.loadMorePosts()
+        }
+      }
+      const observer = new IntersectionObserver(callback, options)
+      observer.observe(this.$refs.observer)
     },
 
     computed: {
@@ -61,38 +80,38 @@
         return this.sortedPosts.filter((post) =>
           post.title.toLowerCase().includes(this.searchQuery.toLowerCase())
         )
-      },
-      pagesToShow() {
-        // 1. Получаем общее количество страниц
-        const totalPages = this.lastPage
-
-        // 2. Получаем текущую страницу
-        const currentPage = this.page
-
-        // 3. Создаем пустой массив для хранения страниц, которые нужно отобразить
-        const pages = []
-
-        // 4. Определяем диапазон страниц для отображения
-        // Мы хотим отобразить 5 страниц, при этом имея возможность перемещаться вперед и назад, поэтому берем текущую страницу и добавляем/вычитаем 2 (в результате текущая страинца будет по центру)
-        // Math.max(1, currentPage - 2) гарантирует, что мы не выйдем за пределы первой страницы
-        // Math.min(totalPages, currentPage + 2) гарантирует, что мы не выйдем за пределы последней страницы
-        const startPage = Math.max(1, currentPage - 2)
-        const endPage = Math.min(totalPages, currentPage + 2)
-
-        // 5. Заполняем массив страниц, которые нужно отобразить
-        for (let i = startPage; i <= endPage; i++) {
-          pages.push(i)
-        }
-
-        // 6. Возвращаем массив страниц, которые нужно отобразить
-        return pages
       }
+      // pagesToShow() {
+      //   // 1. Получаем общее количество страниц
+      //   const totalPages = this.lastPage
+
+      //   // 2. Получаем текущую страницу
+      //   const currentPage = this.page
+
+      //   // 3. Создаем пустой массив для хранения страниц, которые нужно отобразить
+      //   const pages = []
+
+      //   // 4. Определяем диапазон страниц для отображения
+      //   // Мы хотим отобразить 5 страниц, при этом имея возможность перемещаться вперед и назад, поэтому берем текущую страницу и добавляем/вычитаем 2 (в результате текущая страинца будет по центру)
+      //   // Math.max(1, currentPage - 2) гарантирует, что мы не выйдем за пределы первой страницы
+      //   // Math.min(totalPages, currentPage + 2) гарантирует, что мы не выйдем за пределы последней страницы
+      //   const startPage = Math.max(1, currentPage - 2)
+      //   const endPage = Math.min(totalPages, currentPage + 2)
+
+      //   // 5. Заполняем массив страниц, которые нужно отобразить
+      //   for (let i = startPage; i <= endPage; i++) {
+      //     pages.push(i)
+      //   }
+
+      //   // 6. Возвращаем массив страниц, которые нужно отобразить
+      //   return pages
+      // }
     },
     watch: {
-      // при изменении страницы триггерим получение постов
-      page() {
-        this.fetchPosts()
-      }
+      // // при изменении страницы триггерим получение постов
+      // page() {
+      //   this.fetchPosts()
+      // }
     },
     data() {
       // метод data возвращает объект, в котором описываются свойства компонента
@@ -145,9 +164,27 @@
           this.isPostsLoading = false
         }
       },
-      changePage(pageNumber) {
-        this.page = pageNumber
+      async loadMorePosts() {
+        try {
+          this.page += 1
+
+          const response = await axios.get(
+            `https://jsonplaceholder.typicode.com/posts`,
+            {
+              params: {
+                _page: this.page,
+                _limit: this.limit
+              }
+            }
+          )
+          this.posts = [...this.posts, ...response.data] // добавляем новые посты к уже имеющимся (для бесконечной прокрутки)
+        } catch (e) {
+          alert(e)
+        }
       }
+      // changePage(pageNumber) {
+      //   this.page = pageNumber
+      // }
     }
   }
 </script>
@@ -184,5 +221,10 @@
 
   .page--current {
     border: 2px solid teal;
+  }
+
+  .observer {
+    height: 30px;
+    background: green; /* цвет не нужен, просто чтобы отслеживать, что посты подгрузились */
   }
 </style>
