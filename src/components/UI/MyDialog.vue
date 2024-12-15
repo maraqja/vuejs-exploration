@@ -9,20 +9,14 @@
 </template>
 
 <script>
+  import toggleMixin from '@/mixins/toggleMixin'
+
   export default {
     name: 'MyDialog',
-    props: {
-      show: {
-        // пропс-флаг видимости модального окна
-        type: Boolean,
-        default: false
-      }
-    },
-    methods: {
-      hideDialog() {
-        // если кликнули на затемнение за модальным окном, то скрываем его
-        this.$emit('update:show', false)
-      }
+    mixins: [toggleMixin],
+    mounted() {
+      // хук компонента отрабатывает после хука миксин
+      console.log('component mounted')
     }
   }
 </script>
