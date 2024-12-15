@@ -3,7 +3,7 @@
     <h4>Создание поста</h4>
     <!--  v-bind:value="newTitle" - связываем логику с  разметкой -->
     <!--  @input="inputTitle" - связываем разметку с логикой (при наборе в инпут меняются данные компонента) -->
-    <MyInput v-model="post.title" type="text" placeholder="Название" />
+    <MyInput v-focus v-model="post.title" type="text" placeholder="Название" />
     <MyInput v-model="post.body" type="text" placeholder="Описание" />
     <MyButton style="align-self: flex-end; margin-top: 15px" @click="createPost"
       >Создать</MyButton

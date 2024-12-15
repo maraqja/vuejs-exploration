@@ -19,7 +19,7 @@
     />
     <!-- <div v-else>Загрузка...</div> -->
     <!-- Используем ref для получения доступа к DOM элементу -->
-    <div ref="observer" class="observer"></div>
+    <div v-intersection="loadMorePosts" class="observer"></div>
 
     <!-- <div class="page__wrapper">
       <button
@@ -49,23 +49,6 @@
     },
     mounted() {
       this.fetchPosts()
-
-      // // Получаем ссылку на элемент, который будет наблюдаться
-      // console.log(this.$refs.observer)
-      // Intersection Observer API позволяет зарегистрировать callback-функцию, которая отработает, когда мы пересекли какой-то элемент
-      const options = {
-        rootMargin: '0px',
-        threshold: 1.0
-      }
-      const callback = (entries) => {
-        // Колбек отрабатывает при появлении элемента в зоне видимости и при выходе элемента из зоны видимости
-        // Поэтому проверяем, что элемент пересек элемент наблюдения: isIntersecting = true
-        if (entries[0].isIntersecting && this.page < this.lastPage) {
-          this.loadMorePosts()
-        }
-      }
-      const observer = new IntersectionObserver(callback, options)
-      observer.observe(this.$refs.observer)
     },
 
     computed: {
@@ -166,6 +149,8 @@
       },
       async loadMorePosts() {
         try {
+          if (this.page === this.lastPage) return // ге фетчим больше если последняя страница была получена
+
           this.page += 1
 
           const response = await axios.get(
