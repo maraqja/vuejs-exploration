@@ -3,6 +3,7 @@ import App from './App'
 import components from '@/components/UI' // импортируем все UI-компоненты
 import directives from './directives'
 import router from './router/router'
+import store from './store'
 
 const app = createApp(App)
 
@@ -17,4 +18,5 @@ directives.forEach((directive) => {
 })
 
 app.use(router) // подключаем роутер
+app.use(store) // подключаем стор
 app.mount('#app') // указываем куда будет монтироваться в index.html (в див с id = app) наше SPA-приложение
