@@ -1,7 +1,5 @@
 <template>
-  <h1>{{ likes }}</h1>
-  <button @click="addLike">add like</button>
-  <!-- <div>
+  <div>
     <h1>Страница с постами</h1>
     <MyInput v-model="searchQuery" placeholder="Поиск..."></MyInput>
     <div class="app__btns">
@@ -10,28 +8,24 @@
     </div>
 
     <MyDialog v-model:show="dialogVisible">
-      <PostForm @createdPost="addPost" />
+      <PostForm />
     </MyDialog>
-    <PostList
-      v-if="!isPostsLoading"
-      :posts="sortedAndFilteredPosts"
-      @removePost="removePost"
-    />
-    <div v-intersection="loadMorePosts" class="observer"></div>
-  </div> -->
+    <PostList v-if="!isPostsLoading" :posts="sortedAndFilteredPosts" />
+  </div>
 </template>
 
 <script>
-  // описываем логику компонента,
-  // обязательно дефолтно экспортирует объект
-  //   import PostList from '@/components/PostList.vue' // @ - alias для src
-  //   import PostForm from '@/components/PostForm.vue'
-  import { ref } from 'vue'
+  // import PostList from '@/components/PostList.vue'
+  import PostForm from '@/components/PostForm.vue'
+
+  import usePosts from '@/hooks/usePosts'
+  import useSortedPosts from '@/hooks/useSortedPosts'
+  import useSortedAndFilteredPosts from '@/hooks/useSortedAndFilteredPosts'
 
   export default {
     components: {
-      //   PostList,
-      //   PostForm
+      // PostList,
+      PostForm
     },
 
     data() {
@@ -44,15 +38,24 @@
         ]
       }
     },
-    setup() {
-      const likes = ref(0)
-
-      const addLike = () => {
-        likes.value++
+    methods: {
+      showDialog() {
+        this.dialogVisible = true
       }
+    },
+    setup() {
+      const { posts, lastPage, isPostsLoading } = usePosts(10)
+      const { selectedSort, sortedPosts } = useSortedPosts(posts)
+      const { searchQuery, sortedAndFilteredPosts } =
+        useSortedAndFilteredPosts(sortedPosts)
       return {
-        likes,
-        addLike
+        posts,
+        lastPage,
+        isPostsLoading,
+        selectedSort,
+        sortedPosts,
+        searchQuery,
+        sortedAndFilteredPosts
       }
     }
   }

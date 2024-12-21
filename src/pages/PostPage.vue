@@ -9,7 +9,7 @@
     </div>
 
     <MyDialog v-model:show="dialogVisible">
-      <PostForm @createdPost="addPost" />
+      <PostForm />
     </MyDialog>
     <!-- передаем пропс в компонент PostForm -->
     <PostList
